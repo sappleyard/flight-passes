@@ -100,16 +100,33 @@ function drawTop(id, entries) {
       el("td", { className: "num", textContent: number(n) }))));
 }
 
-// A highlight is [hour, callsign, airline, origin, destination, aircraft, why].
-function drawHighlights(h) {
-  if (!h || !h.flights || !h.flights.length) return;
-  $("highlights-note").textContent = `The most unusual flights the microphones heard on ${
-    dayName(h.date, { weekday: "long", day: "numeric", month: "long" })}, judged against every flight heard before them. Most unusual first.`;
-  $("highlight-rows").replaceChildren(...h.flights.map(([hour, callsign, airline, from, to, aircraft, why]) =>
-    el("tr", {},
+// Highlights: [{date, flights}], oldest first, a flight being
+// [hour, callsign, airline, origin, destination, aircraft, why]. The arrows step through days.
+const highlightState = { days: [], at: 0 };
+
+function drawHighlights() {
+  const { days, at } = highlightState;
+  const { date, flights } = days[at];
+  $("highlights-day").textContent = dayName(date, { weekday: "long", day: "numeric", month: "long" });
+  $("highlight-rows").replaceChildren(...(flights.length ? flights.map(
+    ([hour, callsign, airline, from, to, aircraft, why]) => el("tr", {},
       cell(hour, "num nowrap"), cell(callsign, "callsign"), cell(airline),
       cell(from && to ? `${from} → ${to}` : ""), cell(aircraft),
-      el("td", { className: "nowrap" }, el("span", { className: "tag tag--why", textContent: why })))));
+      el("td", { className: "nowrap" }, el("span", { className: "tag tag--why", textContent: why }))))
+    : [el("tr", {}, el("td", { colSpan: 6, className: "empty",
+      textContent: "Nothing unusual heard this day." }))]));
+  $("highlights-older").disabled = at === 0;
+  $("highlights-newer").disabled = at === days.length - 1;
+}
+
+function startHighlights(days) {
+  if (!Array.isArray(days) || !days.length) return;
+  highlightState.days = days;
+  highlightState.at = days.length - 1;
+  const step = (by) => { highlightState.at += by; drawHighlights(); };
+  $("highlights-older").addEventListener("click", () => step(-1));
+  $("highlights-newer").addEventListener("click", () => step(1));
+  drawHighlights();
   $("highlights").hidden = false;
 }
 
@@ -220,7 +237,7 @@ async function start() {
 
   drawStats(rows, days, counts, listened);
   drawDays(rows, days, counts, listened);
-  drawHighlights(data.highlights);
+  startHighlights(data.highlights);
   const heardRows = rows.filter(heard);
   drawTop("top-airlines", tally(heardRows, (r) => r[3]));
   drawTop("top-aircraft", tally(heardRows, (r) => r[6]));

@@ -27,7 +27,12 @@
 
     <section class="section" aria-labelledby="highlights-title" id="highlights" hidden>
       <h2 class="section__title" id="highlights-title">Highlights</h2>
-      <p class="section__note" id="highlights-note"></p>
+      <p class="section__note">The most unusual flights the microphones heard each day, judged against every flight heard before them. Most unusual first.</p>
+      <div class="stepper">
+        <button class="btn btn--arrow" id="highlights-older" type="button" aria-label="Previous day">←</button>
+        <span class="stepper__day" id="highlights-day" aria-live="polite"></span>
+        <button class="btn btn--arrow" id="highlights-newer" type="button" aria-label="Next day">→</button>
+      </div>
       <div class="scroll">
         <table class="highlights">
           <thead>
