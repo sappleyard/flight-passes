@@ -110,7 +110,7 @@ function drawHighlights() {
   $("highlights-day").textContent = dayName(date, { weekday: "long", day: "numeric", month: "long" });
   $("highlight-rows").replaceChildren(...(flights.length ? flights.map(
     ([hour, callsign, airline, from, to, aircraft, why]) => el("tr", {},
-      cell(hour, "num nowrap"), cell(callsign, "callsign"), cell(airline),
+      cell(hour, "nowrap"), cell(callsign, "callsign"), cell(airline),
       cell(from && to ? `${from} → ${to}` : ""), cell(aircraft),
       el("td", { className: "nowrap" }, el("span", { className: "tag tag--why", textContent: why }))))
     : [el("tr", {}, el("td", { colSpan: 6, className: "empty",
