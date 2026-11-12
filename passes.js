@@ -47,7 +47,7 @@ function drawStats(rows, days, counts, listened) {
     && d > [...listened][0]);
   const fullTotal = full.reduce((sum, [d]) => sum + (counts.get(d) || 0), 0);
   const [busyDay, busyCount] = days.reduce(
-    (best, [d]) => ((counts.get(d) || 0) > best[1] ? [d, counts.get(d)] : best), ["", -1]);
+    (best, [d]) => ((counts.get(d) || 0) > best[1] ? [d, counts.get(d) || 0] : best), ["", -1]);
   const helis = heardRows.filter((r) => r[7] === "Helicopter").length;
   const judged = rows.filter((r) => r[8] !== null).length;
   const stats = [
